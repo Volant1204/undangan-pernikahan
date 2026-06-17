@@ -52,6 +52,11 @@
             z-index: 1000;
             animation: slideDown 0.6s ease-out;
             border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            transition: transform 0.5s ease;
+        }
+
+        nav.hidden {
+            transform: translateY(-100%);
         }
 
         .nav-container {
@@ -237,6 +242,37 @@
             color: var(--gold);
             margin-top: 1.5rem;
             animation: fadeIn 1s ease-out 1s both;
+        }
+
+        /* ==================== TOMBOL BUKA UNDANGAN ==================== */
+        .btn-open-invitation {
+            margin-top: 2.5rem;
+            padding: 1rem 3rem;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease-out 1.2s both;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-open-invitation:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-open-invitation:active {
+            transform: scale(0.95);
         }
 
         .scroll-indicator {
@@ -461,9 +497,12 @@
 
         .acara-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr;
             gap: 3rem;
             margin-bottom: 3rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .acara-card {
@@ -508,7 +547,7 @@
         }
 
         .acara-time {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--gold);
             margin-top: 1rem;
@@ -1097,6 +1136,15 @@
             .gift-boxes {
                 grid-template-columns: 1fr;
             }
+
+            .btn-open-invitation {
+                padding: 0.8rem 2rem;
+                font-size: 0.9rem;
+            }
+
+            .acara-grid {
+                max-width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1143,6 +1191,11 @@
                 bottom: 15px;
                 right: 15px;
             }
+
+            .btn-open-invitation {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.8rem;
+            }
         }
 
         /* ==================== PREFERS REDUCED MOTION ==================== */
@@ -1157,7 +1210,7 @@
 </head>
 <body>
     <!-- NAVBAR -->
-    <nav>
+    <nav id="navbar">
         <div class="nav-container">
             <div class="nav-logo">❤️ M I R A N T I</div>
             <ul class="nav-menu">
@@ -1188,6 +1241,11 @@
                 <span class="day">Minggu, 28 Juni 2026</span>
                 <span class="location">Kediaman Mempelai Wanita</span>
             </div>
+
+            <!-- TOMBOL BUKA UNDANGAN -->
+            <button class="btn-open-invitation" id="btnOpenInvitation">
+                ✨ Buka Undangan
+            </button>
         </div>
 
         <div class="scroll-indicator">
@@ -1241,14 +1299,7 @@
                     <div class="acara-icon">💍</div>
                     <h3>Akad Nikah</h3>
                     <p>Doa dan berkah untuk memulai perjalanan baru bersama</p>
-                    <div class="acara-time">Minggu, 28 Juni 2026<br>Jam: TBC</div>
-                </div>
-
-                <div class="acara-card reveal-right">
-                    <div class="acara-icon">🍽️</div>
-                    <h3>Resepsi</h3>
-                    <p>Bergabunglah dengan kami dalam perayaan kebahagiaan ini</p>
-                    <div class="acara-time">Minggu, 28 Juni 2026<br>Jam: TBC</div>
+                    <div class="acara-time">Minggu, 28 Juni 2026<br>Jam: 08:00 WIB</div>
                 </div>
             </div>
 
@@ -1353,6 +1404,15 @@
         const audioToggle = document.getElementById('audioToggle');
         const bgMusic = document.getElementById('bgMusic');
 
+        // Fungsi untuk memutar musik
+        function playMusic() {
+            if (!audioToggle.checked) {
+                audioToggle.checked = true;
+                bgMusic.play();
+                audioPlayer.classList.add('playing');
+            }
+        }
+
         audioToggle.addEventListener('change', function() {
             if (this.checked) {
                 bgMusic.play();
@@ -1363,31 +1423,64 @@
             }
         });
 
+        // ==================== TOMBOL BUKA UNDANGAN ====================
+        const btnOpen = document.getElementById('btnOpenInvitation');
+        const navbar = document.getElementById('navbar');
+
+        btnOpen.addEventListener('click', function() {
+            // 1. Sembunyikan navbar
+            navbar.classList.add('hidden');
+
+            // 2. Putar musik
+            playMusic();
+
+            // 3. Scroll ke section quote dengan smooth
+            const quoteSection = document.getElementById('quote');
+            if (quoteSection) {
+                setTimeout(() => {
+                    quoteSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+
+            // 4. Animasi tombol (feedback)
+            this.textContent = '✨ Selamat Menikmati!';
+            this.style.opacity = '0.7';
+            this.style.cursor = 'default';
+            this.disabled = true;
+        });
+
         // ==================== COUNTDOWN TIMER ====================
         function updateCountdown() {
-            const weddingDate = new Date('June 28, 2026 00:00:00').getTime();
+            const weddingDate = new Date('June 28, 2026 08:00:00').getTime();
             const now = new Date().getTime();
             const timeLeft = weddingDate - now;
 
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-
             if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
                 setTimeout(updateCountdown, 1000);
+            } else {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
             }
         }
 
         updateCountdown();
 
         // ==================== SCROLL REVEAL ====================
-        // Daftar semua elemen dengan class reveal
         const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
 
         const observerOptions = {
@@ -1416,7 +1509,6 @@
             navMenu.classList.toggle('active');
         });
 
-        // Close menu when link is clicked
         document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', function() {
                 navMenu.classList.remove('active');
@@ -1433,6 +1525,37 @@
                 }
             });
         });
+
+        // ==================== TAMPILKAN NAVBAR SAAT SCROLL KE ATAS ====================
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', function() {
+            const currentScrollY = window.scrollY;
+            
+            // Jika scroll ke atas (menuju hero), tampilkan navbar
+            if (currentScrollY < lastScrollY && currentScrollY < 100) {
+                navbar.classList.remove('hidden');
+            }
+            
+            // Jika scroll ke bawah dan sudah melewati hero, sembunyikan navbar (opsional)
+            // Di sini kita biarkan navbar tetap tersembunyi setelah tombol diklik
+            
+            lastScrollY = currentScrollY;
+        });
+
+        // ==================== CEK JIKA USER SCROLL MANUAL KE QUOTE ====================
+        // Jika user scroll ke quote tanpa tombol, tampilkan navbar kembali
+        const quoteObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Jika user sudah di quote, tidak perlu sembunyikan navbar lagi
+                    // Tapi jika navbar tersembunyi dan user scroll ke quote tanpa tombol,
+                    // kita bisa biarkan saja
+                }
+            });
+        }, { threshold: 0.3 });
+
+        quoteObserver.observe(document.getElementById('quote'));
     </script>
 </body>
 </html>
